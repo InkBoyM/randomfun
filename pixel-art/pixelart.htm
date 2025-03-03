@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinite Physics Squares</title>
+<style>
+  .square {
+    width: 50px;
+    height: 50px;
+    background-color: black;
+    position: absolute;
+  }
+</style>
+</head>
+<body>
+
+<script>
+  function createSquare(x, y) {
+    let square = document.createElement('div');
+    square.classList.add('square');
+    square.style.left = x + 'px';
+    square.style.top = y + 'px';
+    document.body.appendChild(square);
+
+    square.addEventListener('mousedown', (event) => {
+      let shiftX = event.clientX - square.getBoundingClientRect().left;
+      let shiftY = event.clientY - square.getBoundingClientRect().top;
+
+      square.style.position = 'absolute';
+      square.style.zIndex = 1000;
+
+      document.body.append(square);
+
+      moveAt(event.pageX, event.pageY);
+
+      function moveAt(pageX, pageY) {
+        square.style.left = pageX - shiftX + 'px';
+        square.style.top = pageY - shiftY + 'px';
+      }
+
+      function onMouseMove(event) {
+        moveAt(event.pageX, event.pageY);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+
+      square.addEventListener('mouseup', () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        square.onmouseup = null;
+      });
+    });
+
+    square.ondragstart = function() {
+      return false;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    let maxX = window.innerWidth - 50;
+    let maxY = window.innerHeight - 50;
+
+    setInterval(() => {
+      let randomX = Math.random() * maxX;
+      let randomY = Math.random() * maxY;
+      createSquare(randomX, randomY);
+    }, 1000);
+  });
+</script>
+
+</body>
+</html>
