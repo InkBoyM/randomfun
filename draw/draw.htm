@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Draw and Pick Colors</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        canvas {
+            border: 2px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <input type="color" id="colorPicker" value="#000000">
+    <input type="number" id="brushSize" min="1" max="50" value="5"> <!-- Added input for brush size -->
+    <canvas id="drawCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('drawCanvas');
+        const context = canvas.getContext('2d');
+        const colorPicker = document.getElementById('colorPicker');
+        const brushSizeInput = document.getElementById('brushSize'); // Added brush size input
+
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', () => {
+            isDrawing = true;
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            context.beginPath();
+        });
+
+        canvas.addEventListener('mousemove', draw);
+
+        colorPicker.addEventListener('input', () => {
+            context.strokeStyle = colorPicker.value;
+        });
+
+        brushSizeInput.addEventListener('input', () => {
+            context.lineWidth = brushSizeInput.value;
+        }); // Event listener for brush size input
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            context.lineCap = 'round';
+
+            context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            context.stroke();
+            context.beginPath();
+            context.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        }
+    </script>
+</body>
+</html>
