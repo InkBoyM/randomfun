@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rizz Detector - Random Funn</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <link rel="icon" href="https://file.garden/Z43SqDt67TpUFO8v/Untitled.png" type="favicon/png">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #282a36);
+            color: #f8f8f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-y: auto; /* Enables vertical scrolling */
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            background: linear-gradient(90deg, #ff79c6, #bd93f9, #50fa7b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s infinite alternate;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        video, canvas {
+            border: 8px solid #bd93f9;
+            border-radius: 15px;
+            width: 70%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        video:hover, canvas:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #ff79c6, #bd93f9);
+            color: #f8f8f2;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #50fa7b, #ff79c6);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 121, 198, 0.6);
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 5px 15px rgba(255, 121, 198, 0.4);
+        }
+
+        #result {
+            margin-top: 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff79c6;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ff79c6, 0 0 20px #bd93f9, 0 0 30px #50fa7b;
+            }
+            to {
+                text-shadow: 0 0 20px #ff79c6, 0 0 40px #bd93f9, 0 0 50px #50fa7b;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Rizz Detector</h1>
+    <video id="webcam" autoplay muted playsinline></video>
+    <canvas id="outputCanvas"></canvas>
+    <button id="checkRizz">Check My Rizz</button>
+    <div id="result"></div>
+
+    <script>
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('outputCanvas');
+        const ctx = canvas.getContext('2d');
+        const resultDiv = document.getElementById('result');
+        const checkRizzButton = document.getElementById('checkRizz');
+        let model, faceDetected = false;
+
+        async function loadBlazeFace() {
+            model = await blazeface.load();
+            console.log("BlazeFace model loaded.");
+        }
+
+        async function startWebcam() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.addEventListener('loadeddata', () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    detectFaces();
+                });
+            } catch (error) {
+                console.error('Error accessing webcam:', error);
+                resultDiv.textContent = 'Error: Unable to access webcam.';
+            }
+        }
+
+        async function detectFaces() {
+            setInterval(async () => {
+                const predictions = await model.estimateFaces(video, false);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                faceDetected = predictions.length > 0;
+
+                if (faceDetected) {
+                    predictions.forEach(prediction => {
+                        const start = prediction.topLeft;
+                        const end = prediction.bottomRight;
+                        const size = [end[0] - start[0], end[1] - start[1]];
+
+                        ctx.strokeStyle = "#ff79c6";
+                        ctx.lineWidth = 4;
+                        ctx.strokeRect(start[0], start[1], size[0], size[1]);
+                    });
+                }
+            }, 100);
+        }
+
+        function checkRizz() {
+            if (faceDetected) {
+                const messages = [
+                    "💯 Maximum Rizz Achieved!",
+                    "🔥 You're on fire! Smooth rizz detected.",
+                    "😎 Your rizz game is strong.",
+                    "😂 Maybe work on your rizz a bit more.",
+                    "🤔 Embarassing!",
+                ];
+                resultDiv.textContent = messages[Math.floor(Math.random() * messages.length)];
+            } else {
+                resultDiv.textContent = "No face detected. Show your rizz-worthy smile!";
+            }
+        }
+
+        checkRizzButton.addEventListener('click', checkRizz);
+
+        loadBlazeFace().then(startWebcam);
+    </script>
+</body>
+</html>
