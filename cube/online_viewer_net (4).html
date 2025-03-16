@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Fun - 3D Cube</title>
+   <link rel="icon" href="https://file.garden/Z43SqDt67TpUFO8v/Untitled.png" type="favicon/png">
+
+<style>
+  body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #cubeContainer {
+    perspective: 1000px;
+    width: 200px;
+    height: 200px;
+  }
+
+  #cube {
+    position: relative;
+    transform-style: preserve-3d;
+    width: 100%;
+    height: 100%;
+    transform: rotateX(0deg) rotateY(0deg);
+    transition: transform 0.5s;
+  }
+
+  .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    background: rgba(255, 255, 255, 0.9);
+    box-sizing: border-box;
+  }
+
+  .front  { transform: rotateY(0deg) translateZ(100px); }
+  .back   { transform: rotateY(180deg) translateZ(100px); }
+  .right  { transform: rotateY(90deg) translateZ(100px); }
+  .left   { transform: rotateY(-90deg) translateZ(100px); }
+  .top    { transform: rotateX(90deg) translateZ(100px); }
+  .bottom { transform: rotateX(-90deg) translateZ(100px); }
+</style>
+</head>
+<body>
+  <div id="cubeContainer">
+    <div id="cube">
+      <div class="face front">Front</div>
+      <div class="face back">Back</div>
+      <div class="face right">Right</div>
+      <div class="face left">Left</div>
+      <div class="face top">Top</div>
+      <div class="face bottom">Bottom</div>
+    </div>
+  </div>
+
+  <script>
+    let isMouseDown = false;
+    let startX, startY;
+
+    document.getElementById('cube').addEventListener('mousedown', (e) => {
+      isMouseDown = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isMouseDown) {
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+
+        const cube = document.getElementById('cube');
+        const transform = getComputedStyle(cube).transform;
+
+        cube.style.transform = `rotateX(${deltaY}deg) rotateY(${deltaX}deg) ${transform}`;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      isMouseDown = false;
+    });
+  </script>
+</body>
+</html>
