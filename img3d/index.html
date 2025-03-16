@@ -1,0 +1,151 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to 3D Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.137.0/build/three.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="upload-section">
+            <div class="version-label">v0.41</div>
+            <h1>ImageTo3D</h1>
+            <p>Upload an image to generate an interactive 3D world you can explore</p>
+            
+            <div class="file-upload-wrapper">
+                <label for="image-upload" class="file-upload-label">Choose Image</label>
+                <input type="file" id="image-upload" accept="image/*">
+                <div id="upload-status">No file selected</div>
+            </div>
+            
+            <div class="advanced-options-toggle" id="advanced-options-toggle">Advanced</div>
+            
+            <div class="multi-image-button" id="multi-image-button">Multi-Image Mode</div>
+            
+            <div class="advanced-options" id="advanced-options">
+                <div class="option-group">
+                    <label for="terrain-height">Terrain Height Scale</label>
+                    <div class="range-container">
+                        <input type="range" id="terrain-height" min="10" max="50" value="20" step="1">
+                        <span class="range-value" id="terrain-height-value">20</span>
+                    </div>
+                    <div class="option-hint">Lower for flatter terrain, higher for spikier mountains</div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="map-size">Map Size</label>
+                    <div class="range-container">
+                        <input type="range" id="map-size" min="50" max="200" value="100" step="10">
+                        <span class="range-value" id="map-size-value">100</span>
+                    </div>
+                    <div class="option-hint">Smaller maps load faster but cover less area</div>
+                </div>
+            </div>
+            
+            <div id="multi-image-section">
+                <h3>Multi-Image Mode</h3>
+                <div id="multi-image-message">Click "Choose Image" to add images</div>
+                <div id="image-slots"></div>
+                <div class="super-multi-toggle" id="super-multi-image-toggle">
+                    <input type="checkbox" id="super-multi-image">
+                    <label for="super-multi-image">Super MultiImage Mode (up to 256 images)</label>
+                </div>
+                <div class="super-multi-warning">
+                    Warning: Adding many images may cause lag or crashes on lower-end devices
+                </div>
+                <div class="multi-image-footer">
+                    Images will be placed side by side in the 3D world
+                </div>
+            </div>
+            
+            <div class="upload-hint">
+                Landscapes, maps, and textured images work best
+            </div>
+            
+            <div id="preview-container">
+                <img id="preview-image" style="display: none;">
+            </div>
+            <button id="generate-button" disabled>Generate 3D Map</button>
+            
+            <div class="tips-section">
+                <h3>Tips for Best Results</h3>
+                <ul class="tips-list">
+                    <li>Use bird's-eye view images of landscapes for better terrain generation</li>
+                    <li>High contrast images create more varied terrain</li>
+                    <li>If you experience lag, reduce the render distance in settings</li>
+                    <li>Topographic maps and height maps work exceptionally well</li>
+                </ul>
+            </div>
+            
+            <div class="rules-section">
+                <h3>Community Rules</h3>
+                <ul class="rules-list">
+                    <li>No NSFW or NSFL content allowed</li>
+                    <li>Do not upload real photographs of people for privacy reasons</li>
+                </ul>
+            </div>
+            
+            <div class="recent-maps">
+                <h2>Recent Maps</h2>
+                <div id="maps-container">
+                    <div class="maps-removed-message">Recent maps has been removed due to risk of nsfw drawings.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="game-container" style="display: none;">
+            <div class="settings-toggle" id="settings-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+                Settings
+            </div>
+            
+            <div class="top-view-button" id="top-view-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 19l-8-9h16l-8 9zm0-2l5.5-6h-11l5.5 6z"/>
+                </svg>
+                Top View
+            </div>
+            
+            <button class="export-obj-button" id="export-obj-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                </svg>
+                Export as OBJ
+            </button>
+            
+            <div class="settings-panel" id="settings-panel">
+                <h3>Graphics Settings</h3>
+                <div class="settings-option">
+                    <label for="render-distance">Render Distance</label>
+                    <div class="range-container">
+                        <input type="range" id="render-distance" min="50" max="300" value="100" step="10">
+                        <span class="range-value" id="render-distance-value">100</span>
+                    </div>
+                </div>
+                <div class="settings-option fly-speed-option">
+                    <label for="fly-speed">Fly Speed</label>
+                    <div class="range-container">
+                        <input type="range" id="fly-speed" min="4" max="20" value="8" step="1">
+                        <span class="range-value" id="fly-speed-value">8</span>
+                    </div>
+                </div>
+                <div class="settings-footer">
+                    <button class="apply-button" id="apply-settings">Apply</button>
+                </div>
+            </div>
+            
+            <div id="controls-info">
+                <p>WASD or Arrow Keys to move, Space to jump, Mouse to look around</p>
+                <p>Press F to toggle flying mode</p>
+                <p>Click in the game area to enable mouse control</p>
+            </div>
+            <div id="game-canvas"></div>
+            <button id="back-button">Upload New Image</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
