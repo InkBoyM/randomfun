@@ -1,113 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Fun</title>
-       <link rel="icon" href="https://file.garden/Z43SqDt67TpUFO8v/Untitled.png" type="favicon/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random Fun</title>
+  <link rel="icon" href="https://file.garden/Z43SqDt67TpUFO8v/random-funlogo.png">
+  <style>
+    :root {
+      --bg: #f7f7f8;
+      --text: #1c1c1e;
+      --btn: #3c3c3c;
+      --btn-hover: #2a2a2a;
+    }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        img.logo {
-            width: 50px;
-            margin-right: 10px;
-        }
-        h1 {
-            font-size: 24px;
-        }
-        .container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px; /* Increased spacing between buttons */
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 0px;
-        }
-        .button {
-            background-color: #333;
-            color: white;
-            padding: 15px;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        .button:hover {
-            background-color: #555;
-        }
-        .button:active {
-            background-color: #777;
-        }
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        @media (max-width: 480px) {
-            .container {
-                grid-template-columns: repeat(1, 1fr);
-            }
-        }
-    </style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "Segoe UI", Arial, Helvetica, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 28px 32px 22px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0;
+      color: var(--text);
+    }
+
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 32px 48px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      padding: 12px 0;
+    }
+
+    .btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 24px 16px;
+      background: var(--btn);
+      color: #fff;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      text-align: center;
+      transition: background .15s ease, transform .15s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      background: var(--btn-hover);
+      transform: translateY(-4px);
+    }
+
+    .btn svg {
+      width: 72px;
+      height: 72px;
+      filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.3));
+    }
+
+    .info-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--btn);
+      color: #fff;
+      border: none;
+      font-family: inherit;
+      font-size: 20px;
+      font-weight: bold;
+      font-style: italic;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: background .15s ease, transform .15s ease;
+      z-index: 100;
+    }
+
+    .info-btn:hover {
+      background: var(--btn-hover);
+      transform: translateY(-4px);
+    }
+
+    .info-popup {
+      position: fixed;
+      bottom: 84px;
+      left: 24px;
+      background: var(--btn);
+      color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.5;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      max-width: 320px;
+    }
+
+    .info-popup a {
+      color: #90caf9;
+      text-decoration: none;
+    }
+
+    .info-popup a:hover {
+      text-decoration: underline;
+    }
+
+    .info-popup.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 520px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <img src="https://file.garden/Z43SqDt67TpUFO8v/Untitled.png" alt="Random Fun Logo" class="logo">
-        <h1>Random Fun</h1>
-    </header>
+  <header>
+    <img src="https://file.garden/Z43SqDt67TpUFO8v/random-funlogo.png" alt="Random Fun logo">
+    <h1>Random Funⱽ²</h1>
+  </header>
 
-    <div class="container">
-        <button class="button" onclick="location.href='/curser-changer'">Curser Changer</button>
-        <button class="button" onclick="location.href='/pixel-art'">Pixel Art</button>
-        <button class="button" onclick="location.href='/bubble-wrap'">Bubble Wrap</button>
-        <button class="button" onclick="location.href='/draw'">Draw</button>
-        <button class="button" onclick="location.href='/cube'">Cube</button>
-        <button class="button" onclick="location.href='/stretch-the-cube'">Stretch the Cube</button>
-        <button class="button" onclick="location.href='/random-number-generator'">Random Number Generator</button>
-        <button class="button" onclick="location.href='/guess-the-number'">Guess The Number</button>
-        <button class="button" onclick="location.href='/10-second-click-test'">10 Second Click Test</button>
-        <button class="button" onclick="location.href='/escape-room'">Escape Room</button>
-        <button class="button" onclick="location.href='/infinite-clicker'">Infinite Clicker</button>
-        <button class="button" onclick="location.href='/font'">Font</button>
-        <button class="button" onclick="location.href='/spinning-cube'">Spinning Cube</button>
-        <button class="button" onclick="location.href='/cube-game'">CUBE</button>
-        <button class="button" onclick="location.href='/tic-tac-toe'">Tic-Tac-Toe</button>
-        <button class="button" onclick="location.href='/ai'">AI</button>
-        <button class="button" onclick="location.href='/rock-paper-scissors'">Rock Paper Scissors</button>
-        <button class="button" onclick="location.href='/trivia'">Trivia</button>
-        <button class="button" onclick="location.href='/rage-game'">RAGE Game</button>
-        <button class="button" onclick="location.href='/rage-game-2'">RAGE Game (2 player)</button>
-        <button class="button" onclick="location.href='/progress'">Progress</button>
-        <button class="button" onclick="location.href='/magic-8-ball'">Magic 8 Ball</button>
-        <button class="button" onclick="location.href='/color-match'">Color Match</button>
-        <button class="button" onclick="location.href='/guess-the-word'">Guess the Word</button>
-        <button class="button" onclick="location.href='/snake'">Snake</button>
-        <button class="button" onclick="location.href='/typing-test'">Typing Test</button>
-        <button class="button" onclick="location.href='/flying-bird'">Flying Bird</button>
-        <button class="button" onclick="location.href='/meme-generator'">Meme Generator</button>
-        <button class="button" onclick="location.href='/brick-breaker'">Brick Breaker</button>
-        <button class="button" onclick="location.href='/pong'">Pong</button>
-        <button class="button" onclick="location.href='/space-shooters'">Space Shooters!</button>
-        <button class="button" onclick="location.href='/shooting-extension'">Shooting Extension</button>
-        <button class="button" onclick="location.href='/polls'">Polls</button>
-        <button class="button" onclick="location.href='/sudoku'">Sudoku</button>
-        <button class="button" onclick="location.href='/dvd-maker'">DVD Maker</button>
-        <button class="button" onclick="location.href='/funny-story-generator'">Funny Story Generator</button>
+  <main>
+    <div class="grid">
+      
+      <a class="btn" href="block-stacker.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="45" width="40" height="40" rx="6" fill="#90caf9"/>
+            <rect x="30" y="30" width="40" height="40" rx="6" fill="#42a5f5"/>
+            <rect x="45" y="15" width="40" height="40" rx="6" fill="#1565c0"/>
+        </svg>
+        <span>Block Stacker</span>
+      </a>
+
+      <a class="btn" href="cube-killer.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="20,80 80,80 80,20" fill="#b71c1c"/>
+            <polygon points="12,72 12,12 72,12" fill="#f44336"/>
+            <line x1="5" y1="95" x2="95" y2="5" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+        <span>Cube Killer</span>
+      </a>
+
+      <a class="btn" href="escape-the-cubes.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="25,45 75,45 75,85 25,85" fill="#cfd8dc"/>
+            <circle cx="50" cy="22" r="14" fill="#00e676"/>
+            <path d="M 40,55 Q 50,45 50,45 M 60,55 Q 50,45 50,45" stroke="#00e676" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="4,4"/>
+            <path d="M 20,40 L 30,50 L 70,50 L 80,40 L 80,90 L 20,90 Z" fill="#78909c"/>
+        </svg>
+        <span>Escape the Cubes</span>
+      </a>
+
+      <a class="btn" href="fruit-ninja-ripoff.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 46,15 A 35,35 0 0,0 46,85 Z" fill="#ff9800"/>
+            <path d="M 46,22 A 28,28 0 0,0 46,78 Z" fill="#ffe082"/>
+            <path d="M 54,15 A 35,35 0 0,1 54,85 Z" fill="#f57c00"/>
+            <path d="M 54,22 A 28,28 0 0,1 54,78 Z" fill="#ffd54f"/>
+            <circle cx="38" cy="40" r="2.5" fill="#795548"/>
+            <circle cx="38" cy="60" r="2.5" fill="#795548"/>
+            <circle cx="62" cy="40" r="2.5" fill="#795548"/>
+            <circle cx="62" cy="60" r="2.5" fill="#795548"/>
+        </svg>
+        <span>Fruit Ninja Ripoff</span>
+      </a>
+
+      <a class="btn" href="space-shooters.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="90" height="90" rx="20" fill="#1a237e"/>
+            <circle cx="20" cy="30" r="1.5" fill="#fff"/>
+            <circle cx="80" cy="40" r="2" fill="#fff"/>
+            <circle cx="30" cy="70" r="1.5" fill="#fff"/>
+            <circle cx="75" cy="80" r="1" fill="#fff"/>
+            <line x1="40" y1="35" x2="40" y2="15" stroke="#ff1744" stroke-width="4" stroke-linecap="round"/>
+            <line x1="60" y1="35" x2="60" y2="15" stroke="#ff1744" stroke-width="4" stroke-linecap="round"/>
+            <polygon points="50,35 25,75 50,65 75,75" fill="#00b0ff"/>
+            <polygon points="50,35 50,65 75,75" fill="#0081cb"/> 
+        </svg>
+        <span>Space Shooters</span>
+      </a>
+
+      <a class="btn" href="tuff-driving-sim.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="25" y="5" width="50" height="90" fill="#8d6e63" rx="6"/>
+            <path d="M 30,15 L 45,25 L 70,15 L 70,30 L 45,40 L 30,30 Z" fill="#212121"/>
+            <path d="M 30,45 L 45,55 L 70,45 L 70,60 L 45,70 L 30,60 Z" fill="#212121"/>
+            <path d="M 30,75 L 45,85 L 70,75 L 70,90 L 45,100 L 30,90 Z" fill="#212121"/>
+        </svg>
+        <span>Tuff Driving Sim</span>
+      </a>
+
+      <a class="btn" href="world-sim.htm">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="70" r="35" fill="#29b6f6"/>
+            <circle cx="35" cy="60" r="12" fill="#66bb6a"/>
+            <circle cx="65" cy="80" r="15" fill="#4caf50"/>
+            <circle cx="50" cy="50" r="10" fill="#66bb6a"/>
+            <polygon points="50,15 40,25 60,25" fill="#ef5350"/>
+            <rect x="42" y="25" width="16" height="12" fill="#eceff1"/>
+            <rect x="48" y="29" width="4" height="8" fill="#5d4037"/>
+        </svg>
+        <span>World Sim</span>
+      </a>
+
     </div>
+  </main>
+
+  <button class="info-btn" id="infoBtn">i</button>
+  <div class="info-popup" id="infoPopup">
+    <strong>About Random Fun:</strong><br><br>
+    Random Fun is a project made by <a href="https://x.com/inkboym" target="_blank" rel="noopener noreferrer">InkBoyM</a> and <a href="https://x.com/Ilya658096" target="_blank" rel="noopener noreferrer">Ilya</a>.<br><br>
+    This is a revive of the original Random Fun projects but we removed all the games but the most entertaining ones!<br><br>
+    More games to come soon.<br><br>
+    Inspired by <a href="https://neal.fun" target="_blank" rel="noopener noreferrer">neal.fun</a>.<br><br>
+    The SVG icons were made with the help of AI.
+  </div>
+
+  <script>
+    const infoBtn = document.getElementById('infoBtn');
+    const infoPopup = document.getElementById('infoPopup');
+
+    
+    infoBtn.addEventListener('click', (event) => {
+      event.stopPropagation(); 
+      infoPopup.classList.toggle('show');
+    });
+
+    
+    document.addEventListener('click', (event) => {
+    
+      if (!infoPopup.contains(event.target)) {
+        infoPopup.classList.remove('show');
+      }
+    });
+  </script>
 
 </body>
 </html>
