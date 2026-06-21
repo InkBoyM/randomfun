@@ -210,6 +210,23 @@
         <span>Fruit Ninja Ripoff</span>
       </a>
 
+      <a class="btn" href="img3d">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="10" width="48" height="42" rx="4" fill="#eceff1"/>
+            <rect x="12" y="14" width="40" height="34" fill="#4dd0e1"/>
+            <circle cx="38" cy="24" r="6" fill="#ffee58"/>
+            <polygon points="12,48 24,32 36,48" fill="#9ccc65"/>
+            <polygon points="26,48 40,26 52,48" fill="#66bb6a"/>
+            
+            <rect x="40" y="52" width="52" height="34" rx="17" fill="#7e57c2"/>
+            <rect x="47" y="65" width="14" height="4" fill="#311b92" rx="1"/>
+            <rect x="52" y="60" width="4" height="14" fill="#311b92" rx="1"/>
+            <circle cx="74" cy="74" r="4.5" fill="#ff4081"/>
+            <circle cx="84" cy="64" r="4.5" fill="#18ffff"/>
+        </svg>
+        <span>Image to Game</span>
+      </a>
+
       <a class="btn" href="space-shooters.htm">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="5" width="90" height="90" rx="20" fill="#1a237e"/>
@@ -265,15 +282,12 @@
     const infoBtn = document.getElementById('infoBtn');
     const infoPopup = document.getElementById('infoPopup');
 
-    
     infoBtn.addEventListener('click', (event) => {
-      event.stopPropagation(); 
+      event.stopPropagation();
       infoPopup.classList.toggle('show');
     });
 
-    
     document.addEventListener('click', (event) => {
-    
       if (!infoPopup.contains(event.target)) {
         infoPopup.classList.remove('show');
       }
