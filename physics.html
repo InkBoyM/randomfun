@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Physics Game with Custom Modes</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #gameCanvas { background-color: #222; display: block; }
+        #settingsBar {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #ffffff;
+            font-size: 16px;
+            font-family: Arial, sans-serif;
+            border-radius: 5px;
+        }
+        #settingsBar label, #settingsBar select, #settingsBar button {
+            margin: 0 5px;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div id="settingsBar">
+        <label for="shapeSelector">Choose shape to spawn:</label>
+        <select id="shapeSelector">
+            <option value="circle">Sphere</option>
+            <option value="rectangle">Cube</option>
+            <option value="triangle">Triangle</option>
+            <option value="pentagon">Pentagon</option>
+            <option value="hexagon">Hexagon</option>
+            <option value="heptagon">Heptagon</option>
+            <option value="octagon">Octagon</option>
+            <option value="star">Star</option>
+        </select>
+        <button id="glueButton">Toggle Glue Mode</button>
+        <button id="colorButton">Toggle Color Change</button>
+        <button id="rotateButton">Toggle Rotate Mode</button>
+        <button id="scaleButton">Toggle Scale Mode</button>
+        <button id="gravityButton">Toggle Gravity</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- Matter.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+    
+    <!-- JavaScript for the game -->
+    <script>
+        // Set up Matter.js
+        const { Engine, Render, Runner, World, Bodies, Mouse, MouseConstraint, Constraint } = Matter;
+
+        // Create engine and world
+        const engine = Engine.create();
+        const world = engine.world;
+
+        // Set up canvas rendering
+        const canvas = document.getElementById("gameCanvas");
+        const render = Render.create({
+            element: document.body,
+            canvas: canvas,
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: '#222'
+            }
+        });
+
+        // Add walls to prevent shapes from escaping
+        const walls = [
+            Bodies.rectangle(window.innerWidth / 2, 0, window.innerWidth, 50, { isStatic: true }), // top
+            Bodies.rectangle(window.innerWidth / 2, window.innerHeight, window.innerWidth, 50, { isStatic: true }), // bottom
+            Bodies.rectangle(0, window.innerHeight / 2, 50, window.innerHeight, { isStatic: true }), // left
+            Bodies.rectangle(window.innerWidth, window.innerHeight / 2, 50, window.innerHeight, { isStatic: true }) // right
+        ];
+        World.add(world, walls);
+
+        // Add mouse control
+        const mouse = Mouse.create(canvas);
+        const mouseConstraint = MouseConstraint.create(engine, { mouse: mouse });
+        World.add(world, mouseConstraint);
+
+        // Shape selection and modes
+        const shapeSelector = document.getElementById("shapeSelector");
+        const glueButton = document.getElementById("glueButton");
+        const colorButton = document.getElementById("colorButton");
+        const rotateButton = document.getElementById("rotateButton");
+        const scaleButton = document.getElementById("scaleButton");
+        const gravityButton = document.getElementById("gravityButton");
+
+        let glueMode = false;
+        let colorMode = false;
+        let rotateMode = false;
+        let scaleMode = false;
+        let gravityEnabled = true;
+        let selectedShape = null;
+
+        glueButton.addEventListener("click", () => {
+            glueMode = !glueMode;
+            glueButton.style.backgroundColor = glueMode ? "#ff5757" : "";
+            selectedShape = null; // Reset any selected shape when toggling glue mode
+        });
+
+        colorButton.addEventListener("click", () => {
+            colorMode = !colorMode;
+            colorButton.style.backgroundColor = colorMode ? "#ff5757" : "";
+        });
+
+        rotateButton.addEventListener("click", () => {
+            rotateMode = !rotateMode;
+            rotateButton.style.backgroundColor = rotateMode ? "#ff5757" : "";
+        });
+
+        scaleButton.addEventListener("click", () => {
+            scaleMode = !scaleMode;
+            scaleButton.style.backgroundColor = scaleMode ? "#ff5757" : "";
+        });
+
+        gravityButton.addEventListener("click", () => {
+            gravityEnabled = !gravityEnabled;
+            engine.world.gravity.y = gravityEnabled ? 1 : 0;
+            gravityButton.style.backgroundColor = gravityEnabled ? "#ff5757" : "";
+        });
+
+        // Add shapes on click based on selection
+        canvas.addEventListener("click", (event) => {
+            const x = event.clientX;
+            const y = event.clientY;
+
+            if (glueMode) {
+                // Select a shape to glue
+                const bodies = Matter.Query.point(world.bodies, { x, y });
+                if (bodies.length > 0) {
+                    if (selectedShape) {
+                        // Connect selected shape with another body
+                        const newConstraint = Constraint.create({
+                            bodyA: selectedShape,
+                            bodyB: bodies[0],
+                            stiffness: 0.5
+                        });
+                        World.add(world, newConstraint);
+                        selectedShape = null; // Reset selection
+                    } else {
+                        selectedShape = bodies[0]; // Select the first shape clicked
+                    }
+                }
+                return; // Exit to prevent shape creation in glue mode
+            }
+
+            // Create new shape if not in glue mode
+            let shape;
+            switch (shapeSelector.value) {
+                case "circle":
+                    shape = Bodies.circle(x, y, 20, { restitution: 0.9, render: { fillStyle: '#ff5757' } });
+                    break;
+                case "rectangle":
+                    shape = Bodies.rectangle(x, y, 40, 40, { restitution: 0.9, render: { fillStyle: '#57ff57' } });
+                    break;
+                case "triangle":
+                    shape = Bodies.fromVertices(x, y, [{ x: 0, y: -30 }, { x: -26, y: 15 }, { x: 26, y: 15 }], { restitution: 0.9, render: { fillStyle: '#5757ff' } });
+                    break;
+                case "pentagon":
+                    shape = Bodies.polygon(x, y, 5, 30, { restitution: 0.9, render: { fillStyle: '#ff57ff' } });
+                    break;
+                case "hexagon":
+                    shape = Bodies.polygon(x, y, 6, 30, { restitution: 0.9, render: { fillStyle: '#57ffff' } });
+                    break;
+                case "heptagon":
+                    shape = Bodies.polygon(x, y, 7, 30, { restitution: 0.9, render: { fillStyle: '#ffaa57' } });
+                    break;
+                case "octagon":
+                    shape = Bodies.polygon(x, y, 8, 30, { restitution: 0.9, render: { fillStyle: '#aaff57' } });
+                    break;
+                case "star":
+                    const starVertices = [
+                        { x: 0, y: -30 }, { x: 10, y: -10 }, { x: 30, y: -10 },
+                        { x: 15, y: 5 }, { x: 20, y: 30 }, { x: 0, y: 15 },
+                        { x: -20, y: 30 }, { x: -15, y: 5 }, { x: -30, y: -10 },
+                        { x: -10, y: -10 }
+                    ];
+                    shape = Bodies.fromVertices(x, y, starVertices, { restitution: 0.9, render: { fillStyle: '#57aaff' } });
+                    break;
+            }
+
+            // Add shape to the world
+            World.add(world, shape);
+        });
+
+        // Handle shape interactions
+        Matter.Events.on(engine, 'afterUpdate', () => {
+            if (rotateMode && selectedShape) {
+                selectedShape.angle += Math.PI / 180; // Rotate by 1 degree
+            }
+        });
+
+        // Handle color change
+        canvas.addEventListener("click", (event) => {
+            if (colorMode) {
+                const x = event.clientX;
+                const y = event.clientY;
+                const bodies = Matter.Query.point(world.bodies, { x, y });
+                if (bodies.length > 0) {
+                    const shape = bodies[0];
+                    shape.render.fillStyle = '#' + Math.floor(Math.random()*16777215).toString(16); // Random color
+                }
+            }
+        });
+
+        // Resize the canvas with window
+        window.addEventListener("resize", () => {
+            render.canvas.width = window.innerWidth;
+            render.canvas.height = window.innerHeight;
+        });
+
+        // Run the engine and renderer
+        Engine.run(engine);
+        Render.run(render);
+    </script>
+</body>
+</html>
