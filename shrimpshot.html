@@ -70,9 +70,30 @@
     opacity: 0.6;
   }
 
+  #game-wrapper:fullscreen,
+  #game-wrapper:-webkit-full-screen {
+    max-width: none;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #111;
+  }
+
   #game-wrapper:fullscreen #game-frame,
   #game-wrapper:-webkit-full-screen #game-frame {
-    height: 100vh;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+  }
+
+  #game-wrapper:fullscreen #controls,
+  #game-wrapper:-webkit-full-screen #controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin: 0;
   }
 </style>
 </head>
